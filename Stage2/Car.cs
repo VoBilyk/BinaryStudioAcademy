@@ -20,18 +20,12 @@ namespace Stage2
 
         public void AddMoney(decimal value)
         {
-            if (value < 0)
-                throw new InvalidOperationException("Wrong value");
-            else
-                Balance += value;
+            Balance += value;
         }
 
         public void SubMoney(decimal value)
         {
-            if (Balance < value && value < 0)
-                throw new InvalidOperationException("Wrong value");
-            else
-                Balance -= value;
+            Balance -= value;
         }
     }
 }
