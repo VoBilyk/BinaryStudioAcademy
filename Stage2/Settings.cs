@@ -15,7 +15,7 @@ namespace Stage2
 
         static public int Timeout { get; private set; } = 3;
 
-        static public int ParkingSpaces { get; private set; }
+        static public int ParkingSpace { get; private set; }
 
         static public decimal Fine { get; private set; }
 

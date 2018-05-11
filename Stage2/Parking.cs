@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stage2
 {
@@ -14,12 +13,12 @@ namespace Stage2
 
         private Parking()
         {
-            Cars = new List<Car>(ParkingSpaces);
+            Cars = new List<Car>(ParkingSpace);
             Transactions = new List<Transaction>();
 
             timeout = Settings.Timeout;
             fine = Settings.Fine;
-            ParkingSpaces = Settings.ParkingSpaces;
+            ParkingSpace = Settings.ParkingSpace;
         }
 
         private int timeout;
@@ -33,16 +32,16 @@ namespace Stage2
 
         public decimal Balance { get; private set; }
 
-        public decimal BalanceForLastMinute { get /* TODO */; }
+        public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)).Sum(t => t.WrittenOffMoney); } }
 
-        public int ParkingSpaces { get; private set; }
+        public int ParkingSpace { get; private set; }
 
-        public int FreeParkingSpaces { get { return ParkingSpaces - Cars.Count; } }
+        public int FreeParkingSpace { get { return ParkingSpace - Cars.Count; } }
 
 
         public void AddCar(Car car)
         {
-            if (Cars.Count >= ParkingSpaces)
+            if (Cars.Count >= ParkingSpace)
             {
                 throw new InvalidOperationException("Don`t have enough parking space");
             }
@@ -72,6 +71,14 @@ namespace Stage2
                 Balance += price;
 
                 Transactions.Add(new Transaction(car.Id, price));
+            }
+        }
+
+        private void WriteToLog()
+        {
+            using (StreamWriter file = new StreamWriter("Transactions.log", true))
+            {
+                file.WriteLine($"Time: {DateTime.Now}, Sum: {BalanceForLastMinute}");
             }
         }
     }
