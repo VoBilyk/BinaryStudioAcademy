@@ -16,9 +16,9 @@ namespace Stage2
             Cars = new List<Car>(ParkingSpace);
             Transactions = new List<Transaction>();
 
-            timeout = Settings.Timeout;
-            fine = Settings.Fine;
-            ParkingSpace = Settings.ParkingSpace;
+            timeout = Settings.timeout;
+            fine = Settings.fine;
+            ParkingSpace = Settings.parkingSpace;
         }
 
         private int timeout;
