@@ -97,16 +97,31 @@ namespace Stage2
                 Console.WriteLine($" {(int)carType}. {carType}");
             }
 
-            decimal type = 0;
+            int type = 0;
             Console.Write("Enter type(number): ");
-            Decimal.TryParse(Console.ReadLine(), out type);
+            Int32.TryParse(Console.ReadLine(), out type);
+            if(!Enum.IsDefined(typeof(CarType), type))
+            {
+                Console.WriteLine("---Error, Wrong car type---");
+                return;
+            }
 
             decimal value = 0;
             Console.Write("Enter money: ");
             Decimal.TryParse(Console.ReadLine(), out value);
 
             var car = new Car((CarType)type, value);
-            Parking.Instance.AddCar(car);
+
+            try
+            {
+                Parking.Instance.AddCar(car);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("---Error---");
+                Console.WriteLine(ex);
+                return;
+            }
 
             Console.WriteLine($"---Success, your car [ID:{car.Id}]---");
         }
@@ -116,14 +131,17 @@ namespace Stage2
             int id = 0;
             Console.Write("Enter your CarID: ");
             Int32.TryParse(Console.ReadLine(), out id);
-
-            Console.WriteLine("\nAvailable car type:");
-            foreach (var carType in Enum.GetValues(typeof(CarType)))
+                       
+            try
             {
-                Console.WriteLine($" {(int)carType}. {carType}");
+                Parking.Instance.RemoveCar(id);
             }
-
-            Parking.Instance.RemoveCar(id);
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("---Error---");
+                Console.WriteLine(ex);
+                return;
+            }
 
             Console.WriteLine($"---Success---");
         }
@@ -138,7 +156,17 @@ namespace Stage2
             Console.Write("Enter money: ");
             Decimal.TryParse(Console.ReadLine(), out value);
 
-            var balance = Parking.Instance.RefillCarBalance(id, value);
+            decimal balance = 0;
+            try
+            {
+                balance = Parking.Instance.RefillCarBalance(id, value);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("---Error---");
+                Console.WriteLine(ex);
+                return;
+            }
 
             Console.WriteLine($"---Success, your balance now: {balance}---");
         }
