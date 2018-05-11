@@ -90,10 +90,16 @@ namespace Stage2
 
         static private void AddCarBalance()
         {
-            Console.WriteLine("Enter your CarID: ");
+            Console.Write("Enter your CarID: ");
             var id = Int32.Parse(Console.ReadLine());
 
-            Console.WriteLine("Enter money: ");
+            if (!Parking.Instance.Cars.Exists(c => c.Id == id))
+            {
+                Console.WriteLine("Wrong ID");
+                return;
+            }
+
+            Console.Write("Enter money: ");
             var value = Decimal.Parse(Console.ReadLine());
 
             var balance = Parking.Instance.RefillCarBalanceById(id, value);
