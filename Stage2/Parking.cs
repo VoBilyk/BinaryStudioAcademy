@@ -13,17 +13,9 @@ namespace Stage2
 
         private Parking()
         {
-            Cars = new List<Car>(ParkingSpace);
+            Cars = new List<Car>(Settings.parkingSpace);
             Transactions = new List<Transaction>();
-
-            timeout = Settings.timeout;
-            fine = Settings.fine;
-            ParkingSpace = Settings.parkingSpace;
         }
-
-        private int timeout;
-
-        private decimal fine;
 
 
         public List<Car> Cars { get; private set; }
@@ -34,7 +26,7 @@ namespace Stage2
 
         public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)).Sum(t => t.WrittenOffMoney); } }
 
-        public int ParkingSpace { get; private set; }
+        public int ParkingSpace { get { return Settings.parkingSpace; } }
 
         public int FreeParkingSpace { get { return ParkingSpace - Cars.Count; } }
 
@@ -64,7 +56,7 @@ namespace Stage2
 
                 if (car.Balance < price)
                 {
-                    price *= fine;
+                    price *= Settings.fine;
                 }
 
                 car.SubMoney(price);
@@ -78,7 +70,7 @@ namespace Stage2
         {
             using (StreamWriter file = new StreamWriter("Transactions.log", true))
             {
-                file.WriteLine($"Time: {DateTime.Now}, Sum: {BalanceForLastMinute}");
+                file.WriteLine($"Time: {DateTime.Now}, Earned: {BalanceForLastMinute}");
             }
         }
     }
