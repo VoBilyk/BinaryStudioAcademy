@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Stage2
 {
@@ -15,20 +16,31 @@ namespace Stage2
         {
             Cars = new List<Car>(Settings.parkingSpace);
             Transactions = new List<Transaction>();
+
+            makingTransactionProcess = new Timer(new TimerCallback(MakeTransactions), null, 0, Settings.timeout * 1000);
+            writingLogProcess = new Timer(new TimerCallback(WriteToLog), null, 60 * 1000, 60 * 1000);
         }
+
+        private Timer makingTransactionProcess;
+        private Timer writingLogProcess;
 
 
         public List<Car> Cars { get; private set; }
 
         public List<Transaction> Transactions { get; private set; }
 
+
         public decimal Balance { get; private set; }
 
         public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)).Sum(t => t.WrittenOffMoney); } }
 
+
         public int ParkingSpace { get { return Settings.parkingSpace; } }
 
         public int FreeParkingSpace { get { return ParkingSpace - Cars.Count; } }
+
+        public IEnumerable<Transaction> GetHistoryForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
+
 
 
         public void AddCar(Car car)
@@ -45,10 +57,17 @@ namespace Stage2
 
         public void DeleteCar(int carId)
         {
-            Cars.Remove(Cars.First(item => item.Id == carId));
+            if (!Cars.Exists(c => c.Id == carId))
+            {
+                throw new InvalidOperationException("Here don`t have this car");
+            }
+            else
+            {
+                Cars.Remove(Cars.First(c => c.Id == carId));
+            }
         }
 
-        private void MakeTransactions()
+        private void MakeTransactions(object obj)
         {
             foreach (var car in Cars)
             {
@@ -66,7 +85,7 @@ namespace Stage2
             }
         }
 
-        private void WriteToLog()
+        private void WriteToLog(object obj)
         {
             using (StreamWriter file = new StreamWriter("Transactions.log", true))
             {
