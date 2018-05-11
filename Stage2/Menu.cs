@@ -19,14 +19,15 @@ namespace Stage2
         static private void ShowCommands()
         {
             Console.WriteLine("---Parking menu---");
-            Console.WriteLine("1. Add/Remove car");
-            Console.WriteLine("2. Add car balance(by id)");
-            Console.WriteLine("3. Get history transactions for last minute");
-            Console.WriteLine("4. Show parking balance");
-            Console.WriteLine("5. Show parking balance for last minute");
-            Console.WriteLine("6. Show number of places"); // free and all
-            Console.WriteLine("7. Show file: Transactions.log");
-            Console.WriteLine("8. Exit\n");
+            Console.WriteLine("1. Add car");
+            Console.WriteLine("2. Remove car");
+            Console.WriteLine("3. Add car balance");
+            Console.WriteLine("4. Get history transactions for last minute");
+            Console.WriteLine("5. Show parking balance");
+            Console.WriteLine("6. Show parking balance for last minute");
+            Console.WriteLine("7. Show number of places");
+            Console.WriteLine("8. Show file: Transactions.log");
+            Console.WriteLine("9. Exit\n");
         }
 
 
@@ -42,38 +43,38 @@ namespace Stage2
             switch (choice)
             {
                 case 1:
-                    Console.WriteLine("What do you want: " +
-                        "1. Add car\n" +
-                        "2. Remove car\n");
-                    Int32.Parse(Console.ReadLine());
-
+                    AddCar();
                     break;
 
                 case 2:
-                    AddCarBalance();
+                    RemoveCar();
                     break;
 
                 case 3:
-                    GetTransacrionForLastMinute();
+                    AddCarBalance();
                     break;
 
                 case 4:
+                    GetTransacrionForLastMinute();
+                    break;
+
+                case 5:
                     ShowParkingBalance();
                     break;
                     
-                case 5:
+                case 6:
                     ShowParkingBalanceForLastMinute();
                     break;
 
-                case 6:
+                case 7:
                     ShowParkingSpace();
                     break;
 
-                case 7:
+                case 8:
                     ShowLog();
                     break;
 
-                case 8:
+                case 9:
                     run = false;
                     break;
 
@@ -88,21 +89,56 @@ namespace Stage2
             Console.ReadKey();
         }
 
-        static private void AddCarBalance()
+        static private void AddCar()
         {
-            Console.Write("Enter your CarID: ");
-            var id = Int32.Parse(Console.ReadLine());
-
-            if (!Parking.Instance.Cars.Exists(c => c.Id == id))
+            Console.WriteLine("\nAvailable car type:");
+            foreach (var carType in Enum.GetValues(typeof(CarType)))
             {
-                Console.WriteLine("Wrong ID");
-                return;
+                Console.WriteLine($" {(int)carType}. {carType}");
             }
 
-            Console.Write("Enter money: ");
-            var value = Decimal.Parse(Console.ReadLine());
+            decimal type = 0;
+            Console.Write("Enter type(number): ");
+            Decimal.TryParse(Console.ReadLine(), out type);
 
-            var balance = Parking.Instance.RefillCarBalanceById(id, value);
+            decimal value = 0;
+            Console.Write("Enter money: ");
+            Decimal.TryParse(Console.ReadLine(), out value);
+
+            var car = new Car((CarType)type, value);
+            Parking.Instance.AddCar(car);
+
+            Console.WriteLine($"---Success, your car [ID:{car.Id}]---");
+        }
+
+        static private void RemoveCar()
+        {
+            int id = 0;
+            Console.Write("Enter your CarID: ");
+            Int32.TryParse(Console.ReadLine(), out id);
+
+            Console.WriteLine("\nAvailable car type:");
+            foreach (var carType in Enum.GetValues(typeof(CarType)))
+            {
+                Console.WriteLine($" {(int)carType}. {carType}");
+            }
+
+            Parking.Instance.RemoveCar(id);
+
+            Console.WriteLine($"---Success---");
+        }
+
+        static private void AddCarBalance()
+        {
+            int id = 0;
+            Console.Write("Enter your CarID: ");
+            Int32.TryParse(Console.ReadLine(), out id);
+
+            decimal value = 0;
+            Console.Write("Enter money: ");
+            Decimal.TryParse(Console.ReadLine(), out value);
+
+            var balance = Parking.Instance.RefillCarBalance(id, value);
 
             Console.WriteLine($"---Success, your balance now: {balance}---");
         }

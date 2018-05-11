@@ -1,16 +1,15 @@
-﻿
-using System;
-
-namespace Stage2
+﻿namespace Stage2
 {
     class Car
     {
-        public Car(int id, CarType type, decimal balance = 0)
+        public Car(CarType type, decimal balance = 0)
         {
-            Id = id;
+            Id = idNumber++;
             Type = type;
             Balance = balance;
         }
+
+        static private int idNumber = 0;
 
         public int Id { get; private set; }
 

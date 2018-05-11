@@ -14,8 +14,8 @@ namespace Stage2
 
         private Parking()
         {
-            Cars = new List<Car>(Settings.parkingSpace);
-            Transactions = new List<Transaction>();
+            cars = new List<Car>(Settings.parkingSpace);
+            transactions = new List<Transaction>();
 
             makingTransactionProcess = new Timer(new TimerCallback(MakeTransactions), null, 0, Settings.timeout * 1000);
             writingLogProcess = new Timer(new TimerCallback(WriteToLog), null, 60 * 1000, 60 * 1000);
@@ -25,64 +25,67 @@ namespace Stage2
         private Timer writingLogProcess;
 
 
-        public List<Car> Cars { get; private set; }
-
-        public List<Transaction> Transactions { get; private set; }
+        private List<Car> cars;
+        private List<Transaction> transactions;
 
 
         public decimal Balance { get; private set; }
 
-        public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1))
+        public decimal BalanceForLastMinute { get { return transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1))
                                                                        .Sum(t => t.WrittenOffMoney); } }
-
 
         public int ParkingSpace { get { return Settings.parkingSpace; } }
 
-        public int FreeParkingSpace { get { return ParkingSpace - Cars.Count; } }
+        public int FreeParkingSpace { get { return ParkingSpace - cars.Count; } }
 
-        public IEnumerable<Transaction> GetTransactionsForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
+        public IEnumerable<Transaction> GetTransactionsForLastMinute { get { return transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
 
-        public decimal RefillCarBalanceById(int id, decimal value)
+        public decimal RefillCarBalance(int id, decimal value)
         {
-            if (!Cars.Exists(c => c.Id == id))
+            if (!cars.Exists(c => c.Id == id))
             {
                 throw new InvalidOperationException("Don`t have this car");
             }
             else
             {
-                var car = Cars.Find(c => c.Id == id);
-                car.AddMoney(value);
-                return car.Balance;
+                cars.Find(c => c.Id == id).AddMoney(value);
+
+                return cars.Find(c => c.Id == id).Balance;
             }
         }
 
         public void AddCar(Car car)
         {
-            if (Cars.Count >= ParkingSpace)
+            if (cars.Count >= ParkingSpace)
             {
                 throw new InvalidOperationException("Don`t have enough parking space");
             }
             else
             {
-                Cars.Add(car);
+                cars.Add(car);
             }
         }
 
         public void RemoveCar(int carId)
         {
-            if (!Cars.Exists(c => c.Id == carId))
+            if (!cars.Exists(c => c.Id == carId))
             {
                 throw new InvalidOperationException("Here don`t have this car");
             }
+           
+            if(cars.Find(c => c.Id == carId).Balance < 0)
+            {
+                throw new InvalidOperationException("You must refill your balance");
+            }
             else
             {
-                Cars.Remove(Cars.First(c => c.Id == carId));
+                cars.Remove(cars.Find(c => c.Id == carId));
             }
         }
 
         private void MakeTransactions(object obj)
         {
-            foreach (var car in Cars)
+            foreach (var car in cars)
             {
                 decimal price = Settings.parkingPrices[car.Type];
 
@@ -94,10 +97,10 @@ namespace Stage2
                 car.SubMoney(price);
                 Balance += price;
 
-                Transactions.Add(new Transaction(car.Id, price));
+                transactions.Add(new Transaction(car.Id, price));
 
                 // Deleting transactions older than 1 minute
-                Transactions.RemoveAll(t => t.DateTime < DateTime.Now.AddMinutes(-1));
+                transactions.RemoveAll(t => t.DateTime < DateTime.Now.AddMinutes(-1));
             }
         }
 
