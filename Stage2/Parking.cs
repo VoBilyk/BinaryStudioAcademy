@@ -82,6 +82,9 @@ namespace Stage2
                 Balance += price;
 
                 Transactions.Add(new Transaction(car.Id, price));
+
+                // Deleting transactions older than 1 minute
+                Transactions.RemoveAll(t => t.DateTime < DateTime.Now.AddMinutes(-1));
             }
         }
 
