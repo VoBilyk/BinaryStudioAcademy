@@ -8,6 +8,7 @@ namespace Stage2
         static public readonly int timeout = 3;
         static public readonly int parkingSpace = 5;
         static public readonly decimal fine = 1.5M;
+        static public readonly string logFile = "Transactions.log";
 
         static public readonly Dictionary<CarType, decimal> parkingPrices = new Dictionary<CarType, decimal>()
         {

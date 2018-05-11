@@ -32,16 +32,29 @@ namespace Stage2
 
         public decimal Balance { get; private set; }
 
-        public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)).Sum(t => t.WrittenOffMoney); } }
+        public decimal BalanceForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1))
+                                                                       .Sum(t => t.WrittenOffMoney); } }
 
 
         public int ParkingSpace { get { return Settings.parkingSpace; } }
 
         public int FreeParkingSpace { get { return ParkingSpace - Cars.Count; } }
 
-        public IEnumerable<Transaction> GetHistoryForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
+        public IEnumerable<Transaction> GetTransactionsForLastMinute { get { return Transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
 
-
+        public decimal RefillCarBalanceById(int id, decimal value)
+        {
+            if (!Cars.Exists(c => c.Id == id))
+            {
+                throw new InvalidOperationException("Don`t have this car");
+            }
+            else
+            {
+                var car = Cars.Find(c => c.Id == id);
+                car.AddMoney(value);
+                return car.Balance;
+            }
+        }
 
         public void AddCar(Car car)
         {
@@ -55,7 +68,7 @@ namespace Stage2
             }
         }
 
-        public void DeleteCar(int carId)
+        public void RemoveCar(int carId)
         {
             if (!Cars.Exists(c => c.Id == carId))
             {
@@ -90,7 +103,7 @@ namespace Stage2
 
         private void WriteToLog(object obj)
         {
-            using (StreamWriter file = new StreamWriter("Transactions.log", true))
+            using (StreamWriter file = new StreamWriter(Settings.logFile, true))
             {
                 file.WriteLine($"Time: {DateTime.Now}, Earned: {BalanceForLastMinute}");
             }
