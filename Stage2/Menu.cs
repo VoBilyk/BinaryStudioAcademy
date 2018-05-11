@@ -119,7 +119,7 @@ namespace Stage2
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("---Error---");
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 return;
             }
 
@@ -139,7 +139,7 @@ namespace Stage2
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("---Error---");
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace Stage2
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("---Error---");
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 return;
             }
 
