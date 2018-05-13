@@ -128,13 +128,17 @@ namespace Stage2
 
         static private void RemoveCar()
         {
-            int id = 0;
             Console.Write("Enter your CarID: ");
-            Int32.TryParse(Console.ReadLine(), out id);
-                       
+                   
             try
             {
+                var id = Guid.Parse(Console.ReadLine());
                 Parking.Instance.RemoveCar(id);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("---Error, Not correct CarID---");
+                return;
             }
             catch (InvalidOperationException ex)
             {
@@ -142,15 +146,16 @@ namespace Stage2
                 Console.WriteLine(ex.Message);
                 return;
             }
+            
 
             Console.WriteLine($"---Success---");
         }
 
         static private void AddCarBalance()
         {
-            int id = 0;
+            var id = new Guid();
             Console.Write("Enter your CarID: ");
-            Int32.TryParse(Console.ReadLine(), out id);
+            Guid.TryParse(Console.ReadLine(), out id);
 
             decimal value = 0;
             Console.Write("Enter money: ");

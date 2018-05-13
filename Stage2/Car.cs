@@ -1,17 +1,17 @@
-﻿namespace Stage2
+﻿using System;
+
+namespace Stage2
 {
     class Car
     {
         public Car(CarType type, decimal balance = 0)
         {
-            Id = idNumber++;
+            Id = Guid.NewGuid();
             Type = type;
             Balance = balance;
         }
 
-        static private int idNumber = 0;
-
-        public int Id { get; private set; }
+        public Guid Id { get; private set; }
 
         public decimal Balance { get; private set; }
 
