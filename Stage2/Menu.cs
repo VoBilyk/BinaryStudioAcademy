@@ -199,12 +199,20 @@ namespace Stage2
 
         static private void ShowLog()
         {
-            Console.WriteLine("---Transactions.log---");
+            string log = String.Empty;
 
-            using (var log = File.OpenText(Settings.logFile))
+            try
             {
-                Console.WriteLine(log.ReadToEnd());
+                log = File.ReadAllText(Settings.logFile);
             }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("---Error, Transactions.log not found---");
+                return;
+            }
+
+            Console.WriteLine("---Transactions.log---");
+            Console.WriteLine(log);
         }
     }
 }
