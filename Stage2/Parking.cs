@@ -40,7 +40,7 @@ namespace Stage2
 
         public IEnumerable<Transaction> GetTransactionsForLastMinute { get { return transactions.Where(t => t.DateTime >= DateTime.Now.AddMinutes(-1)); } }
 
-        public decimal RefillCarBalance(int id, decimal value)
+        public decimal RefillCarBalance(Guid id, decimal value)
         {
             if (!cars.Exists(c => c.Id == id))
             {
@@ -66,7 +66,7 @@ namespace Stage2
             }
         }
 
-        public void RemoveCar(int carId)
+        public void RemoveCar(Guid carId)
         {
             if (!cars.Exists(c => c.Id == carId))
             {

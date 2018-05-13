@@ -4,7 +4,7 @@ namespace Stage2
 {
     class Transaction
     {
-        public Transaction(int carId, decimal writtenOffMoney)
+        public Transaction(Guid carId, decimal writtenOffMoney)
         {
             DateTime = DateTime.Now;
             CarId = carId;
@@ -13,7 +13,7 @@ namespace Stage2
 
         public DateTime DateTime { get; private set; }
 
-        public int CarId { get; private set; }
+        public Guid CarId { get; private set; }
 
         public decimal WrittenOffMoney { get; private set; }
 
